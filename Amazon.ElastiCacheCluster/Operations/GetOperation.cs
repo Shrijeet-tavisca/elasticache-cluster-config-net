@@ -15,6 +15,8 @@
  * express or implied. See the License for the specific language governing
  * permissions and limitations under the License.
  */
+
+using System;
 using Enyim.Caching.Memcached;
 using Enyim.Caching.Memcached.Protocol;
 using Enyim.Caching.Memcached.Results;
@@ -52,6 +54,13 @@ namespace Amazon.ElastiCacheCluster.Operations
 
             return result.Pass();
         }
+
+#if CORE_CLR
+        protected override System.Threading.Tasks.Task<IOperationResult> ReadResponseAsync(PooledSocket socket)
+        {
+            throw new System.NotImplementedException();
+        }
+#endif
 
         CacheItem IGetOperation.Result
         {

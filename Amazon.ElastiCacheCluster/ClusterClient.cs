@@ -17,6 +17,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Enyim.Caching;
+#if CORE_CLR
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
+#endif
 
 namespace Amazon.ElastiCacheCluster
 {
@@ -26,6 +30,7 @@ namespace Amazon.ElastiCacheCluster
     /// </summary>
     public static class ClusterClient
     {
+#if !CORE_CLR
         /// <summary>
         /// Creates a MemcachedClient using the settings found in the app.config section "clusterclient"
         /// </summary>
@@ -44,6 +49,7 @@ namespace Amazon.ElastiCacheCluster
         {
             return new MemcachedClient(new ElastiCacheClusterConfig(section));
         }
+#endif
 
         /// <summary>
         /// Creates a MemcachedClient using the default settings with the endpoint and port specified
@@ -51,19 +57,33 @@ namespace Amazon.ElastiCacheCluster
         /// <param name="endpoint">The url for the cluster endpoint containing .cfg.</param>
         /// <param name="port">The port to access the cluster on</param>
         /// <returns>A new MemcachedClient configured for auto discovery</returns>
+#if CORE_CLR
+        public static MemcachedClient CreateClient(string endpoint, int port, ILogger<MemcachedClient> logger = null)
+        {
+            return new MemcachedClient(logger ?? NullLogger<MemcachedClient>.Instance, new ElastiCacheClusterConfig(endpoint, port));
+        }
+#else
         public static MemcachedClient CreateClient(string endpoint, int port)
         {
             return new MemcachedClient(new ElastiCacheClusterConfig(endpoint, port));
         }
+#endif
 
         /// <summary>
         /// Creates a MemcachedClient using the Client config provided
         /// </summary>
         /// <param name="config">The config to instantiate the client with</param>
         /// <returns>A new MemcachedClient configured for auto discovery</returns>
+#if CORE_CLR
+        public static MemcachedClient CreateClient(ElastiCacheClusterConfig config, ILogger<MemcachedClient> logger = null)
+        {
+            return new MemcachedClient(logger ?? NullLogger<MemcachedClient>.Instance, config);
+        }
+#else
         public static MemcachedClient CreateClient(ElastiCacheClusterConfig config)
         {
             return new MemcachedClient(config);
         }
+#endif
     }
 }

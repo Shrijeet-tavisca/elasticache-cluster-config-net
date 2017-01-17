@@ -24,7 +24,13 @@ using Enyim.Caching.Memcached.Protocol.Binary;
 using Enyim.Caching.Configuration;
 using Amazon.ElastiCacheCluster.Pools;
 using Amazon.ElastiCacheCluster.Factories;
+using Enyim.Caching;
+
+#if CORE_CLR
+using Microsoft.Extensions.Logging;
+#else
 using System.Configuration;
+#endif
 
 namespace Amazon.ElastiCacheCluster
 {
@@ -47,8 +53,9 @@ namespace Amazon.ElastiCacheCluster
         /// </summary>
         public DiscoveryNode DiscoveryNode { get; private set; }
 
-        #region Constructors
+#region Constructors
 
+#if !CORE_CLR
         /// <summary>
         /// Initializes a MemcahcedClient config with auto discovery enabled from the app.config clusterclient section
         /// </summary>
@@ -61,6 +68,7 @@ namespace Amazon.ElastiCacheCluster
         /// <param name="section">The section to get config settings from</param>
         public ElastiCacheClusterConfig(string section)
             : this(ConfigurationManager.GetSection(section) as ClusterConfigSettings) { }
+#endif
 
         /// <summary>
         /// Initializes a MemcahcedClient config with auto discovery enabled
@@ -78,6 +86,9 @@ namespace Amazon.ElastiCacheCluster
         {
             if (setup == null)
             {
+#if CORE_CLR
+                throw new ArgumentNullException(nameof(setup));
+#else
                 try
                 {
                     setup = ConfigurationManager.GetSection("clusterclient") as ClusterConfigSettings;
@@ -90,6 +101,7 @@ namespace Amazon.ElastiCacheCluster
                 {
                     throw new ConfigurationErrorsException("Could not instantiate from app.config\n" + ex.Message);
                 }
+#endif
             }
 
             if (setup.ClusterEndPoint == null)
@@ -100,24 +112,41 @@ namespace Amazon.ElastiCacheCluster
                 throw new ArgumentException("Port cannot be 0 or less");
 
             this.setup = setup;
+#if CORE_CLR
+            this.Servers = new List<EndPoint>();
+#else
             this.Servers = new List<IPEndPoint>();
+#endif
 
             this.Protocol = setup.Protocol;
 
             if (setup.KeyTransformer == null)
                 this.KeyTransformer = new DefaultKeyTransformer();
             else
-                this.KeyTransformer = setup.KeyTransformer.CreateInstance() ?? new DefaultKeyTransformer();
+#if CORE_CLR
+                this.KeyTransformer = setup.KeyTransformer ?? new DefaultKeyTransformer();
+#else
+            this.KeyTransformer = setup.KeyTransformer.CreateInstance() ?? new DefaultKeyTransformer();
+#endif
 
             this.SocketPool = (ISocketPoolConfiguration)setup.SocketPool ?? new SocketPoolConfiguration();
             this.Authentication = (IAuthenticationConfiguration)setup.Authentication ?? new AuthenticationConfiguration();
 
+#if CORE_CLR
+            this.nodeFactory = setup.NodeFactory ?? new DefaultConfigNodeFactory(Logger);
+            this.nodeLocator = setup.NodeLocator ?? typeof(DefaultNodeLocator);
+#else
             this.nodeFactory = setup.NodeFactory ?? new DefaultConfigNodeFactory();
             this.nodeLocator = setup.NodeLocator != null ? setup.NodeLocator.Type : typeof(DefaultNodeLocator);
+#endif
             
             if (setup.Transcoder != null)
             {
+#if CORE_CLR
+                this.transcoder = setup.Transcoder ?? new DefaultTranscoder();
+#else
                 this.transcoder = setup.Transcoder.CreateInstance() ?? new DefaultTranscoder();
+#endif
             }
             
             if (setup.ClusterEndPoint.HostName.IndexOf(".cfg", StringComparison.OrdinalIgnoreCase) >= 0)
@@ -137,14 +166,18 @@ namespace Amazon.ElastiCacheCluster
             }
         }
 
-        #endregion
+#endregion
 
-        #region Members
+#region Members
 
         /// <summary>
         /// Gets a list of <see cref="T:IPEndPoint"/> each representing a Memcached server in the pool.
         /// </summary>
+#if CORE_CLR
+        public IList<EndPoint> Servers { get; private set; }
+#else
         public IList<IPEndPoint> Servers { get; private set; }
+#endif
 
         /// <summary>
         /// Gets the configuration of the socket pool.
@@ -194,21 +227,27 @@ namespace Amazon.ElastiCacheCluster
             set { this.transcoder = value; }
         }
 
+#if !CORE_CLR
         /// <summary>
         /// Gets or sets the <see cref="T:Enyim.Caching.Memcached.IPerformanceMonitor"/> instance which will be used monitor the performance of the client.
         /// </summary>
         public IPerformanceMonitor PerformanceMonitor { get; set; }
+#endif
 
         /// <summary>
         /// Gets or sets the type of the communication between client and server.
         /// </summary>
         public MemcachedProtocol Protocol { get; set; }
 
-        #endregion
+#endregion
 
-        #region [ interface                     ]
+#region [ interface                     ]
 
+#if CORE_CLR
+        IList<System.Net.EndPoint> IMemcachedClientConfiguration.Servers
+#else
         IList<System.Net.IPEndPoint> IMemcachedClientConfiguration.Servers
+#endif
         {
             get { return this.Servers; }
         }
@@ -228,7 +267,7 @@ namespace Amazon.ElastiCacheCluster
             return this.KeyTransformer;
         }
 
-        IMemcachedNodeLocator IMemcachedClientConfiguration.CreateNodeLocator()
+        public IMemcachedNodeLocator CreateNodeLocator()
         {
             var f = this.NodeLocatorFactory;
             if (f != null) return f.Create();
@@ -260,11 +299,23 @@ namespace Amazon.ElastiCacheCluster
             return this.Pool;
         }
 
+#if !CORE_CLR
         IPerformanceMonitor IMemcachedClientConfiguration.CreatePerformanceMonitor()
         {
             return this.PerformanceMonitor;
         }
+#endif
 
         #endregion
+
+#if CORE_CLR
+        ILogger<MemcachedClient> _logger;
+
+        public ILogger<MemcachedClient> Logger
+        {
+            get { return _logger ?? NullLogger<MemcachedClient>.Instance; }
+            set { _logger = value; }
+        }
+#endif
     }
 }

@@ -23,6 +23,9 @@ using Enyim.Caching.Memcached.Results;
 using Enyim.Caching.Memcached.Results.Extensions;
 using Enyim.Caching.Memcached;
 using Amazon.ElastiCacheCluster.Helpers;
+#if CORE_CLR
+using System.Threading.Tasks;
+#endif
 
 namespace Amazon.ElastiCacheCluster.Operations
 {
@@ -85,6 +88,13 @@ namespace Amazon.ElastiCacheCluster.Operations
             var result = new TextOperationResult();
             return result.Pass();
         }
+
+#if CORE_CLR
+        protected override Task<IOperationResult> ReadResponseAsync(PooledSocket socket)
+        {
+            throw new System.NotSupportedException();
+        }
+#endif
 
         protected override bool ReadResponseAsync(PooledSocket socket, Action<bool> next)
         {

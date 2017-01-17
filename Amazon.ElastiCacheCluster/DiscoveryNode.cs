@@ -18,7 +18,6 @@ using System.Linq;
 using System.Text;
 
 using System.Net;
-using System.Configuration;
 using Enyim.Caching.Configuration;
 using Enyim.Caching.Memcached;
 using Amazon.ElastiCacheCluster.Helpers;
@@ -330,7 +329,11 @@ namespace Amazon.ElastiCacheCluster
                 try
                 {
                     tryCount--;
+#if CORE_CLR
+                    entry = Dns.GetHostEntryAsync(hostname).Result;
+#else
                     entry = Dns.GetHostEntry(hostname);
+#endif
                     if (entry.AddressList.Length > 0)
                     {
                         waiting = false;
@@ -374,7 +377,7 @@ namespace Amazon.ElastiCacheCluster
             return this.EndPoint;
         }
 
-        #endregion
+#endregion
 
         /// <summary>
         /// Stops the current poller

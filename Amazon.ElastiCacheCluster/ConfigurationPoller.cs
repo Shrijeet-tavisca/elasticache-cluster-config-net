@@ -16,7 +16,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Timers;
+using System.Threading;
 
 namespace Amazon.ElastiCacheCluster
 {
@@ -57,8 +57,6 @@ namespace Amazon.ElastiCacheCluster
             this.intervalDelay = intervalDelay < 0 ? DEFAULT_INTERVAL_DELAY : intervalDelay;
             this.config = config;
 
-            this.timer = new Timer(this.intervalDelay);
-            this.timer.Elapsed += this.pollOnTimedEvent;
         }
 
         #endregion
@@ -68,14 +66,13 @@ namespace Amazon.ElastiCacheCluster
         internal void StartTimer()
         {
             log.Debug("Starting timer");
-            this.pollOnTimedEvent(null, null);
-            this.timer.Start();
+            this.timer = new Timer(pollOnTimedEvent, null, this.intervalDelay, this.intervalDelay);
         }
 
         /// <summary>
         /// Used by the poller's timer to update the cluster configuration if a new version is available
         /// </summary>
-        internal void pollOnTimedEvent(Object source, ElapsedEventArgs evnt)
+        internal void pollOnTimedEvent(Object state)
         {
             log.Debug("Polling...");
             try
@@ -127,8 +124,8 @@ namespace Amazon.ElastiCacheCluster
         public void StopPolling()
         {
             log.Debug("Destroying poller thread");
-            if (this.timer != null)
-                this.timer.Dispose();
+            var t = Interlocked.Exchange(ref this.timer, null);
+            t?.Dispose();
         }
     }
 }

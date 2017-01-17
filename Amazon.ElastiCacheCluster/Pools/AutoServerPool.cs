@@ -35,14 +35,14 @@ namespace Amazon.ElastiCacheCluster.Pools
 
         private IMemcachedNode[] allNodes;
 
-        private IMemcachedClientConfiguration configuration;
+        private ElastiCacheClusterConfig configuration;
         private IOperationFactory factory;
         internal IMemcachedNodeLocator nodeLocator;
 
         private object DeadSync = new Object();
         private System.Threading.Timer resurrectTimer;
         private bool isTimerActive;
-        private long deadTimeoutMsec;
+        private int deadTimeoutMsec;
         private bool isDisposed;
         private event Action<IMemcachedNode> nodeFailed;
 
@@ -51,7 +51,7 @@ namespace Amazon.ElastiCacheCluster.Pools
         /// </summary>
         /// <param name="configuration">The client configuration using the pool</param>
         /// <param name="opFactory">The factory used to create operations on demand</param>
-        public AutoServerPool(IMemcachedClientConfiguration configuration, IOperationFactory opFactory)
+        public AutoServerPool(ElastiCacheClusterConfig configuration, IOperationFactory opFactory)
         {
             if (configuration == null) throw new ArgumentNullException("socketConfig");
             if (opFactory == null) throw new ArgumentNullException("opFactory");
@@ -59,7 +59,7 @@ namespace Amazon.ElastiCacheCluster.Pools
             this.configuration = configuration;
             this.factory = opFactory;
 
-            this.deadTimeoutMsec = (long)this.configuration.SocketPool.DeadTimeout.TotalMilliseconds;
+            this.deadTimeoutMsec = (int)this.configuration.SocketPool.DeadTimeout.TotalMilliseconds;
         }
 
         ~AutoServerPool()
@@ -68,10 +68,17 @@ namespace Amazon.ElastiCacheCluster.Pools
             catch { }
         }
 
+#if CORE_CLR
+        protected virtual IMemcachedNode CreateNode(EndPoint endpoint)
+        {
+            return new MemcachedNode(endpoint, this.configuration.SocketPool, this.configuration.Logger);
+        }
+#else
         protected virtual IMemcachedNode CreateNode(IPEndPoint endpoint)
         {
             return new MemcachedNode(endpoint, this.configuration.SocketPool);
         }
+#endif
 
         private void rezCallback(object state)
         {
@@ -204,7 +211,7 @@ namespace Amazon.ElastiCacheCluster.Pools
             }
         }
 
-        #region [ IServerPool                  ]
+#region [ IServerPool                  ]
 
         IMemcachedNode IServerPool.Locate(string key)
         {
@@ -254,8 +261,8 @@ namespace Amazon.ElastiCacheCluster.Pools
             remove { this.nodeFailed -= value; }
         }
 
-        #endregion
-        #region [ IDisposable                  ]
+#endregion
+#region [ IDisposable                  ]
 
         void IDisposable.Dispose()
         {
@@ -290,7 +297,7 @@ namespace Amazon.ElastiCacheCluster.Pools
             }
         }
 
-        #endregion
+#endregion
 
         /// <summary>
         /// Used to update the servers for Auto discovery
