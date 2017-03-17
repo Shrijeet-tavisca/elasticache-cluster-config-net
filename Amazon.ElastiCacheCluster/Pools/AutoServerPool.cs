@@ -248,7 +248,7 @@ namespace Amazon.ElastiCacheCluster.Pools
 
             this.nodeLocator = locator;
 
-            var config = this.configuration as ElastiCacheClusterConfig;
+            var config = (ElastiCacheClusterConfig)this.configuration;
             if (config.setup.ClusterPoller.IntervalDelay < 0)
                 config.DiscoveryNode.StartPoller();
             else

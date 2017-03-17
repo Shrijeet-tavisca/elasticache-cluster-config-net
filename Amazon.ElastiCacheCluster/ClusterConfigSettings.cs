@@ -113,7 +113,7 @@ namespace Amazon.ElastiCacheCluster
         [ConfigurationProperty("poller", IsRequired = false)]
         public PollerSettings ClusterPoller
 #if CORE_CLR
-        { get; set; }
+        { get; set; } = new PollerSettings();
 #else
         {
             get { return (PollerSettings)base["poller"]; }
@@ -222,7 +222,7 @@ namespace Amazon.ElastiCacheCluster
             [ConfigurationProperty("intervalDelay", DefaultValue = -1, IsRequired = false)]
             public int IntervalDelay
 #if CORE_CLR
-            { get; set; }
+            { get; set; } = -1;
 #else
             {
                 get { return (int)base["intervalDelay"]; }
