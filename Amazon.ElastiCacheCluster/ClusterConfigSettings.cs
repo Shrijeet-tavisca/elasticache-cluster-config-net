@@ -68,8 +68,11 @@ namespace Amazon.ElastiCacheCluster
             if (port <= 0)
                 throw new ArgumentException("Port cannot be less than or equal to zero");
 
-            this.ClusterEndPoint.HostName = hostname;
-            this.ClusterEndPoint.Port = port;
+            ClusterEndPoint = new Endpoint
+            {
+                HostName = hostname,
+                Port = port,
+            };
         }
 
 #endregion
