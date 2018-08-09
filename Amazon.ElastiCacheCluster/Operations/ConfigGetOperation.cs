@@ -23,7 +23,7 @@ using Enyim.Caching.Memcached.Results;
 using Enyim.Caching.Memcached.Results.Extensions;
 using Enyim.Caching.Memcached;
 using Amazon.ElastiCacheCluster.Helpers;
-#if CORE_CLR
+#if NETSTANDARD
 using System.Threading.Tasks;
 #endif
 
@@ -89,7 +89,7 @@ namespace Amazon.ElastiCacheCluster.Operations
             return result.Pass();
         }
 
-#if CORE_CLR
+#if NETSTANDARD
         protected override Task<IOperationResult> ReadResponseAsync(PooledSocket socket)
         {
             throw new System.NotSupportedException();

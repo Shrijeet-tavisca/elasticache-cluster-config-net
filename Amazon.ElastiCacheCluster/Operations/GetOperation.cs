@@ -55,7 +55,7 @@ namespace Amazon.ElastiCacheCluster.Operations
             return result.Pass();
         }
 
-#if CORE_CLR
+#if NETSTANDARD
         protected override System.Threading.Tasks.Task<IOperationResult> ReadResponseAsync(PooledSocket socket)
         {
             throw new System.NotImplementedException();

@@ -17,7 +17,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Enyim.Caching;
-#if CORE_CLR
+#if NETSTANDARD
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 #endif
@@ -30,7 +30,7 @@ namespace Amazon.ElastiCacheCluster
     /// </summary>
     public static class ClusterClient
     {
-#if !CORE_CLR
+#if !NETSTANDARD
         /// <summary>
         /// Creates a MemcachedClient using the settings found in the app.config section "clusterclient"
         /// </summary>
@@ -57,7 +57,7 @@ namespace Amazon.ElastiCacheCluster
         /// <param name="endpoint">The url for the cluster endpoint containing .cfg.</param>
         /// <param name="port">The port to access the cluster on</param>
         /// <returns>A new MemcachedClient configured for auto discovery</returns>
-#if CORE_CLR
+#if NETSTANDARD
         public static MemcachedClient CreateClient(string endpoint, int port, ILogger<MemcachedClient> logger = null)
         {
             return new MemcachedClient(logger ?? NullLogger<MemcachedClient>.Instance, new ElastiCacheClusterConfig(endpoint, port));
@@ -74,7 +74,7 @@ namespace Amazon.ElastiCacheCluster
         /// </summary>
         /// <param name="config">The config to instantiate the client with</param>
         /// <returns>A new MemcachedClient configured for auto discovery</returns>
-#if CORE_CLR
+#if NETSTANDARD
         public static MemcachedClient CreateClient(ElastiCacheClusterConfig config, ILogger<MemcachedClient> logger = null)
         {
             return new MemcachedClient(logger ?? NullLogger<MemcachedClient>.Instance, config);

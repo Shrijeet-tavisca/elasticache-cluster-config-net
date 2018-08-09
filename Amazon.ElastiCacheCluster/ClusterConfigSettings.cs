@@ -22,13 +22,13 @@ using System.Text;
 using Enyim.Caching.Configuration;
 using Enyim.Caching.Memcached;
 using Amazon.ElastiCacheCluster.Factories;
-#if !CORE_CLR
+#if !NETSTANDARD
 using System.Configuration;
 #endif
 
 namespace Amazon.ElastiCacheCluster
 {
-#if CORE_CLR
+#if NETSTANDARD
     internal class ConfigurationPropertyAttribute : Attribute
     {
         internal ConfigurationPropertyAttribute(string name) { }
@@ -40,7 +40,7 @@ namespace Amazon.ElastiCacheCluster
     /// A config settings object used to configure the client config
     /// </summary>
     public class ClusterConfigSettings
-#if !CORE_CLR
+#if !NETSTANDARD
         : ConfigurationSection
 #endif
     {
@@ -84,7 +84,7 @@ namespace Amazon.ElastiCacheCluster
         /// </summary>
         [ConfigurationProperty("endpoint", IsRequired = true)]
         public Endpoint ClusterEndPoint
-#if CORE_CLR
+#if NETSTANDARD
         { get; set; }
 #else
         {
@@ -98,7 +98,7 @@ namespace Amazon.ElastiCacheCluster
         /// </summary>
         [ConfigurationProperty("node", IsRequired = false)]
         public NodeSettings ClusterNode
-#if CORE_CLR
+#if NETSTANDARD
         { get; set; }
 #else
         {
@@ -112,7 +112,7 @@ namespace Amazon.ElastiCacheCluster
         /// </summary>
         [ConfigurationProperty("poller", IsRequired = false)]
         public PollerSettings ClusterPoller
-#if CORE_CLR
+#if NETSTANDARD
         { get; set; } = new PollerSettings();
 #else
         {
@@ -125,7 +125,7 @@ namespace Amazon.ElastiCacheCluster
         /// Endpoint that contains the hostname and port for auto discovery
         /// </summary>
         public class Endpoint
-#if CORE_CLR
+#if NETSTANDARD
 #else
             : ConfigurationElement
 #endif
@@ -135,7 +135,7 @@ namespace Amazon.ElastiCacheCluster
             /// </summary>
             [ConfigurationProperty("hostname", IsRequired = true)]
             public String HostName
-#if CORE_CLR
+#if NETSTANDARD
             { get; set; }
 #else
             {
@@ -155,7 +155,7 @@ namespace Amazon.ElastiCacheCluster
             /// </summary>
             [ConfigurationProperty("port", IsRequired = true)]
             public int Port
-#if CORE_CLR
+#if NETSTANDARD
             { get; set; }
 #else
             {
@@ -175,7 +175,7 @@ namespace Amazon.ElastiCacheCluster
         /// Settings used for the discovery node
         /// </summary>
         public class NodeSettings
-#if !CORE_CLR
+#if !NETSTANDARD
             : ConfigurationElement
 #endif
         {
@@ -184,7 +184,7 @@ namespace Amazon.ElastiCacheCluster
             /// </summary>
             [ConfigurationProperty("nodeTries", DefaultValue = -1, IsRequired = false)]
             public int NodeTries
-#if CORE_CLR
+#if NETSTANDARD
             { get; set; }
 #else
             {
@@ -198,7 +198,7 @@ namespace Amazon.ElastiCacheCluster
             /// </summary>
             [ConfigurationProperty("nodeDelay", DefaultValue = -1, IsRequired = false)]
             public int NodeDelay
-#if CORE_CLR
+#if NETSTANDARD
             { get; set; }
 #else
             {
@@ -212,7 +212,7 @@ namespace Amazon.ElastiCacheCluster
         /// Settins used for the configuration poller
         /// </summary>
         public class PollerSettings
-#if !CORE_CLR
+#if !NETSTANDARD
             : ConfigurationElement
 #endif
         {
@@ -221,7 +221,7 @@ namespace Amazon.ElastiCacheCluster
             /// </summary>
             [ConfigurationProperty("intervalDelay", DefaultValue = -1, IsRequired = false)]
             public int IntervalDelay
-#if CORE_CLR
+#if NETSTANDARD
             { get; set; } = -1;
 #else
             {
@@ -239,7 +239,7 @@ namespace Amazon.ElastiCacheCluster
         /// Gets or sets the configuration of the socket pool.
         /// </summary>
         [ConfigurationProperty("socketPool", IsRequired = false)]
-#if CORE_CLR
+#if NETSTANDARD
         public ISocketPoolConfiguration SocketPool { get; set; }
 #else
         public SocketPoolElement SocketPool
@@ -253,7 +253,7 @@ namespace Amazon.ElastiCacheCluster
         /// Gets or sets the configuration of the authenticator.
         /// </summary>
         [ConfigurationProperty("authentication", IsRequired = false)]
-#if CORE_CLR
+#if NETSTANDARD
         public IAuthenticationConfiguration Authentication { get; set; }
 #else
         public AuthenticationElement Authentication
@@ -267,7 +267,7 @@ namespace Amazon.ElastiCacheCluster
         /// Gets or sets the <see cref="T:Enyim.Caching.Memcached.IMemcachedNodeLocator"/> which will be used to assign items to Memcached nodes.
         /// </summary>
         [ConfigurationProperty("locator", IsRequired = false)]
-#if CORE_CLR
+#if NETSTANDARD
         public Type NodeLocator { get; set; }
 #else
         public ProviderElement<IMemcachedNodeLocator> NodeLocator
@@ -281,7 +281,7 @@ namespace Amazon.ElastiCacheCluster
         /// Gets or sets the <see cref="T:Enyim.Caching.Memcached.IMemcachedKeyTransformer"/> which will be used to convert item keys for Memcached.
         /// </summary>
         [ConfigurationProperty("keyTransformer", IsRequired = false)]
-#if CORE_CLR
+#if NETSTANDARD
         public IMemcachedKeyTransformer KeyTransformer { get; set; }
 #else
         public ProviderElement<IMemcachedKeyTransformer> KeyTransformer
@@ -295,7 +295,7 @@ namespace Amazon.ElastiCacheCluster
         /// Gets or sets the <see cref="T:Enyim.Caching.Memcached.ITranscoder"/> which will be used serialzie or deserialize items.
         /// </summary>
         [ConfigurationProperty("transcoder", IsRequired = false)]
-#if CORE_CLR
+#if NETSTANDARD
         public ITranscoder Transcoder { get; set; }
 #else
         public ProviderElement<ITranscoder> Transcoder
@@ -305,7 +305,7 @@ namespace Amazon.ElastiCacheCluster
         }
 #endif
 
-#if !CORE_CLR
+#if !NETSTANDARD
         /// <summary>
         /// Gets or sets the <see cref="T:Enyim.Caching.Memcached.IPerformanceMonitor"/> which will be used monitor the performance of the client.
         /// </summary>
@@ -322,7 +322,7 @@ namespace Amazon.ElastiCacheCluster
         /// </summary>
         [ConfigurationProperty("protocol", IsRequired = false, DefaultValue = MemcachedProtocol.Binary)]
         public MemcachedProtocol Protocol
-#if CORE_CLR
+#if NETSTANDARD
         { get; set; }
 #else
         {

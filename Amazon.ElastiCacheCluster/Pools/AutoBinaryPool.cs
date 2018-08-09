@@ -37,7 +37,7 @@ namespace Amazon.ElastiCacheCluster.Pools
         ElastiCacheClusterConfig configuration;
 
         public AutoBinaryPool(ElastiCacheClusterConfig configuration)
-#if CORE_CLR
+#if NETSTANDARD
             : base(configuration, new BinaryOperationFactory(configuration.Logger))
 #else
             : base(configuration, new BinaryOperationFactory())
@@ -47,7 +47,7 @@ namespace Amazon.ElastiCacheCluster.Pools
             this.configuration = configuration;
         }
 
-#if CORE_CLR
+#if NETSTANDARD
         protected override IMemcachedNode CreateNode(EndPoint endpoint)
 #else
         protected override IMemcachedNode CreateNode(IPEndPoint endpoint)
@@ -56,7 +56,7 @@ namespace Amazon.ElastiCacheCluster.Pools
         {
             if (endpoint == null)
                 throw new ArgumentNullException("endpoint");
-#if CORE_CLR
+#if NETSTANDARD
             return new BinaryNode(endpoint, this.configuration.SocketPool, this.authenticationProvider, this.configuration.Logger);
 #else
             return new BinaryNode(endpoint, this.configuration.SocketPool, this.authenticationProvider);

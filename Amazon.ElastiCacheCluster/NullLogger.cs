@@ -1,4 +1,4 @@
-﻿#if CORE_CLR
+﻿#if NETSTANDARD
 using System;
 using System.Collections.Generic;
 using System.Linq;

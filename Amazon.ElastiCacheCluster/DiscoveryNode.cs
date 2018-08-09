@@ -25,7 +25,9 @@ using Amazon.ElastiCacheCluster.Operations;
 using Amazon.ElastiCacheCluster.Pools;
 using Enyim.Caching.Memcached.Results;
 using Enyim.Caching.Memcached.Protocol;
+#if !NET35
 using System.Threading.Tasks;
+#endif
 using System.Threading;
 
 namespace Amazon.ElastiCacheCluster
@@ -35,14 +37,14 @@ namespace Amazon.ElastiCacheCluster
     /// </summary>
     public class DiscoveryNode
     {
-        #region Static ReadOnlys
+#region Static ReadOnlys
 
         private static readonly Enyim.Caching.ILog log = Enyim.Caching.LogManager.GetLogger(typeof(DiscoveryNode));
 
         internal static readonly int DEFAULT_TRY_COUNT = 5;
         internal static readonly int DEFAULT_TRY_DELAY = 1000;
 
-        #endregion
+#endregion
 
         /// <summary>
         /// The version of memcached running on the Nodes
@@ -59,7 +61,7 @@ namespace Amazon.ElastiCacheCluster
         /// </summary>
         public int NodesInCluster { get { return this.nodes.Count; } }
 
-        #region Private Fields
+#region Private Fields
 
         private IPEndPoint EndPoint;
 
@@ -79,9 +81,9 @@ namespace Amazon.ElastiCacheCluster
 
         private Object nodesLock, endpointLock, clusterLock;
 
-        #endregion
+#endregion
 
-        #region Constructors
+#region Constructors
 
         /// <summary>
         /// The node used to discover endpoints in an ElastiCache cluster
@@ -102,7 +104,7 @@ namespace Amazon.ElastiCacheCluster
         /// <param name="delay">The time, in miliseconds, to wait between tries</param>
         internal DiscoveryNode(ElastiCacheClusterConfig config, string hostname, int port, int tries, int delay)
         {
-            #region Param Checks
+#region Param Checks
 
             if (config == null)
                 throw new ArgumentNullException("config");
@@ -117,9 +119,9 @@ namespace Amazon.ElastiCacheCluster
             if (hostname.IndexOf(".cfg", StringComparison.OrdinalIgnoreCase) < 0)
                 throw new ArgumentException("The hostname is not able to use Auto Discovery");
 
-            #endregion
+#endregion
 
-            #region Setting Members
+#region Setting Members
 
             this.hostname = hostname;
             this.port = port;
@@ -132,14 +134,14 @@ namespace Amazon.ElastiCacheCluster
             this.endpointLock = new Object();
             this.nodesLock = new Object();
 
-            #endregion
+#endregion
 
             this.ResolveEndPoint();
         }
 
-        #endregion
+#endregion
 
-        #region Poller Methods
+#region Poller Methods
 
         /// <summary>
         /// Used to start a poller that checks for changes in the cluster client configuration
@@ -161,9 +163,9 @@ namespace Amazon.ElastiCacheCluster
             this.poller.StartTimer();
         }
 
-        #endregion
+#endregion
 
-        #region Config Info
+#region Config Info
         /// <summary>
         /// Parses the string NodeConfig into a list of IPEndPoints for configuration
         /// </summary>
@@ -331,7 +333,7 @@ namespace Amazon.ElastiCacheCluster
                 try
                 {
                     tryCount--;
-#if CORE_CLR
+#if NETSTANDARD
                     using (var tsc = new CancellationTokenSource(TimeSpan.FromSeconds(3)))
                     {
                         var t = Dns.GetHostEntryAsync(hostname);

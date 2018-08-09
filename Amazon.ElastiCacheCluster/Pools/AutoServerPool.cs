@@ -68,7 +68,7 @@ namespace Amazon.ElastiCacheCluster.Pools
             catch { }
         }
 
-#if CORE_CLR
+#if NETSTANDARD
         protected virtual IMemcachedNode CreateNode(EndPoint endpoint)
         {
             return new MemcachedNode(endpoint, this.configuration.SocketPool, this.configuration.Logger);

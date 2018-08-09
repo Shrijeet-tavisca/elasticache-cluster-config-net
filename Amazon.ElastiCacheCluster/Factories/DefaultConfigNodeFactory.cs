@@ -20,7 +20,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using Enyim.Caching;
-#if CORE_CLR
+#if NETSTANDARD
 using Microsoft.Extensions.Logging;
 #endif
 
@@ -28,7 +28,7 @@ namespace Amazon.ElastiCacheCluster.Factories
 {
     internal class DefaultConfigNodeFactory : IConfigNodeFactory
     {
-#if CORE_CLR
+#if NETSTANDARD
         readonly ILogger logger;
         public DefaultConfigNodeFactory(ILogger logger)
         {
@@ -37,7 +37,7 @@ namespace Amazon.ElastiCacheCluster.Factories
 #endif
         public IMemcachedNode CreateNode(IPEndPoint endpoint, ISocketPoolConfiguration config)
         {
-#if CORE_CLR
+#if NETSTANDARD
             return new MemcachedNode(endpoint, config, logger);
 #else
             return new MemcachedNode(endpoint, config);

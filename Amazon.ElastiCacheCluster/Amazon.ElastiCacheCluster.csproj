@@ -1,10 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net35;net45;netstandard1.6</TargetFrameworks>
+    <TargetFrameworks>net35;net45;netstandard2.0</TargetFrameworks>
     <AssemblyName>Amazon.ElastiCacheCluster</AssemblyName>
-    <PackageId>Amazon.ElastiCacheCluster</PackageId>
-    <NetStandardImplicitPackageVersion>1.6.1</NetStandardImplicitPackageVersion>
+    <PackageId>AmazonElastiCacheClusterConfig-Scopely</PackageId>
     <GenerateAssemblyTitleAttribute>false</GenerateAssemblyTitleAttribute>
     <GenerateAssemblyDescriptionAttribute>false</GenerateAssemblyDescriptionAttribute>
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
@@ -14,7 +13,7 @@
     <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
     <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <Version>1.1.1</Version>
+    <Version>1.1.4</Version>
     <PackageLicenseUrl>http://aws.amazon.com/apache2.0</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/awslabs/elasticache-cluster-config-net</PackageProjectUrl>
     <RepositoryUrl>https://github.com/awslabs/elasticache-cluster-config-net</RepositoryUrl>
@@ -40,12 +39,8 @@
     <PublicSign Condition=" '$(OS)' != 'Windows_NT' ">true</PublicSign>
   </PropertyGroup>
 
-  <PropertyGroup Condition=" '$(TargetFramework)' == 'netstandard1.6' ">
-    <DefineConstants>$(DefineConstants);CORE_CLR</DefineConstants>
-  </PropertyGroup>
-
-  <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard1.6' ">
-    <PackageReference Include="EnyimMemcachedCore" Version="1.1.1.6" />
+  <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' ">
+    <PackageReference Include="EnyimMemcachedCore-Scopely" Version="1.2.0" />
     <PackageReference Include="System.Net.NameResolution" Version="4.3.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="1.1.1" />
   </ItemGroup>
