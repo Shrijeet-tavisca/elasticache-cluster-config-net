@@ -25,6 +25,8 @@ using Amazon.ElastiCacheCluster.Operations;
 using Amazon.ElastiCacheCluster.Pools;
 using Enyim.Caching.Memcached.Results;
 using Enyim.Caching.Memcached.Protocol;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace Amazon.ElastiCacheCluster
 {
@@ -330,7 +332,12 @@ namespace Amazon.ElastiCacheCluster
                 {
                     tryCount--;
 #if CORE_CLR
-                    entry = Dns.GetHostEntryAsync(hostname).Result;
+                    using (var tsc = new CancellationTokenSource(TimeSpan.FromSeconds(3)))
+                    {
+                        var t = Dns.GetHostEntryAsync(hostname);
+                        t.Wait(tsc.Token);
+                        entry = t.Result;
+                    }
 #else
                     entry = Dns.GetHostEntry(hostname);
 #endif
@@ -341,6 +348,7 @@ namespace Amazon.ElastiCacheCluster
                 }
                 catch (Exception ex)
                 {
+                    log.Error(ex);
                     message = ex.Message;
                     System.Threading.Thread.Sleep(this.delay);
                 }

@@ -4,7 +4,7 @@
     <TargetFrameworks>net35;net45;netstandard1.6</TargetFrameworks>
     <AssemblyName>Amazon.ElastiCacheCluster</AssemblyName>
     <PackageId>Amazon.ElastiCacheCluster</PackageId>
-    <NetStandardImplicitPackageVersion>1.6.0</NetStandardImplicitPackageVersion>
+    <NetStandardImplicitPackageVersion>1.6.1</NetStandardImplicitPackageVersion>
     <GenerateAssemblyTitleAttribute>false</GenerateAssemblyTitleAttribute>
     <GenerateAssemblyDescriptionAttribute>false</GenerateAssemblyDescriptionAttribute>
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
