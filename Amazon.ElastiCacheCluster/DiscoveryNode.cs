@@ -333,16 +333,7 @@ namespace Amazon.ElastiCacheCluster
                 try
                 {
                     tryCount--;
-#if NETSTANDARD
-                    using (var tsc = new CancellationTokenSource(TimeSpan.FromSeconds(3)))
-                    {
-                        var t = Dns.GetHostEntryAsync(hostname);
-                        t.Wait(tsc.Token);
-                        entry = t.Result;
-                    }
-#else
                     entry = Dns.GetHostEntry(hostname);
-#endif
                     if (entry.AddressList.Length > 0)
                     {
                         waiting = false;
