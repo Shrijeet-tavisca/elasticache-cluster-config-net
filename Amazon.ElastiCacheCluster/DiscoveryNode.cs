@@ -329,11 +329,7 @@ namespace Amazon.ElastiCacheCluster
                 try
                 {
                     tryCount--;
-#if CORE_CLR
-                    entry = Dns.GetHostEntryAsync(hostname).Result;
-#else
                     entry = Dns.GetHostEntry(hostname);
-#endif
                     if (entry.AddressList.Length > 0)
                     {
                         waiting = false;
